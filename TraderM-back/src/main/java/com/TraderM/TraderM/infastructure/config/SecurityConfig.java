@@ -1,6 +1,7 @@
 package com.TraderM.TraderM.infastructure.config;
 
 
+import com.TraderM.TraderM.infastructure.service.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,13 +18,14 @@ import org.springframework.security.web.access.intercept.AuthorizationFilter;
 public class SecurityConfig {
 
     private final UserDetailsService userDetailsService;
+    private final JwtService jwtService;
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
        return http.csrf(crsf -> crsf.disable()).authorizeHttpRequests(
-        auth -> auth.requestMatchers("/api/public/**").permitAll()
+        auth -> auth.requestMatchers("/api/auth/**").permitAll()
         .requestMatchers("/api/users/**").hasAnyAuthority("ROLE_USER")
         .anyRequest().authenticated()
-       ).addFilterBefore(new JwtAuthFilter(userDetailsService), AuthorizationFilter.class).build();
+       ).addFilterBefore(new JwtAuthFilter(jwtService,userDetailsService), AuthorizationFilter.class).build();
     }
 
     @Bean
