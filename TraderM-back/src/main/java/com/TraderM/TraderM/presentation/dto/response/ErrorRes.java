@@ -1,6 +1,11 @@
 package com.TraderM.TraderM.presentation.dto.response;
 
+import java.time.LocalDateTime;
+
 public record ErrorRes(
-        String message
+            LocalDateTime timestamp,
+            int status,
+            String error,
+            String path
 ) {
 }
