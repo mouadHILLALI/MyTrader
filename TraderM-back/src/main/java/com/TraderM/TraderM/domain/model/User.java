@@ -1,19 +1,17 @@
 package com.TraderM.TraderM.domain.model;
 
+import com.TraderM.TraderM.presentation.exception.customExceptions.NoCoinWasFoundException;
+import com.TraderM.TraderM.presentation.exception.customExceptions.SymbolAlreadyExistException;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.UUID;
+import java.util.*;
 
 @Entity
-@Data
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "users")
@@ -27,9 +25,31 @@ public class User implements UserDetails {
     private boolean twoFactorAuth;
     private String role;
 
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private Set<Coin> coins = new HashSet<>();
+
+    public void addCoin(Coin coin) {
+        if (this.coins.stream().anyMatch(c -> c.getSymbol().equals(coin.getSymbol()))) throw new SymbolAlreadyExistException("this symbol already exist");
+        coin.setOwner(this);
+        this.coins.add(coin);
+    }
+
+    public void removeCoin(UUID coinId) {
+        this.coins.removeIf(coin -> coin.getId().equals(coinId));
+    }
+
+    public void updateCoinPrice(String symbol, double newPrice) {
+        this.coins.stream()
+                .filter(coin -> coin.getSymbol().equals(symbol))
+                .findFirst()
+                .orElseThrow(() -> new NoCoinWasFoundException("Coin not found"))
+                .updatePrice(newPrice);
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.emptyList(); // Or use SimpleGrantedAuthority if roles are needed
+        return Collections.emptyList();
     }
 
     @Override
