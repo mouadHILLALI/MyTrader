@@ -9,7 +9,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "coins")
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class Coin {
@@ -30,7 +30,7 @@ public class Coin {
         this.price = newPrice;
     }
 
-    protected void setOwner(User owner) {
+    public void setOwner(User owner) {
         this.owner = owner;
     }
 }
