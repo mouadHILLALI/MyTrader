@@ -15,6 +15,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -45,6 +46,17 @@ public class CoinServiceImpl implements CoinService {
         Coin existingCoin = coinRepository.findById(coin)
                 .orElseThrow(() -> new NoCoinWasFoundException("Coin not found"));
         coinRepository.delete(existingCoin);
+    }
+
+    @Override
+    public List<CoinResDto> getCoins() {
+        return coinRepository.findAll().stream().map(coin -> new CoinResDto(coin.getId() , coin.getName() , coin.getSymbol(), coin.getPrice() , coin.getSupply())).toList();
+    }
+
+    @Override
+    public CoinResDto getCoinById(UUID coinId) {
+        Coin coin = coinRepository.findById(coinId).orElseThrow(() -> new NoCoinWasFoundException("Coin not found"));
+        return new CoinResDto(coin.getId() , coin.getName() , coin.getSymbol(), coin.getPrice() , coin.getSupply());
     }
 
     @Transactional

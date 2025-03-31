@@ -1,7 +1,6 @@
 package com.TraderM.TraderM.application.controller;
 
 import com.TraderM.TraderM.application.service.CoinService;
-import com.TraderM.TraderM.domain.model.Coin;
 import com.TraderM.TraderM.presentation.dto.request.CoinReqDto;
 import com.TraderM.TraderM.presentation.dto.request.UpdateCoinReqDto;
 import com.TraderM.TraderM.presentation.dto.response.CoinResDto;
@@ -10,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -36,5 +36,13 @@ public class CoinController {
         return ResponseEntity.ok(coinService.updateCoin(coin,ownerId));
     }
 
+    @GetMapping("/allCoins")
+    public ResponseEntity<List<CoinResDto>> getAllCoins() {
+        return ResponseEntity.ok(coinService.getCoins());
+    }
 
+    @GetMapping("/getCoin/{coinId}")
+    public ResponseEntity<CoinResDto> getCoinById(@PathVariable UUID coinId) {
+        return ResponseEntity.ok(coinService.getCoinById(coinId));
+    }
 }
