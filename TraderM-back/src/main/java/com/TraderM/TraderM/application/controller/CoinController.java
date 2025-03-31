@@ -2,6 +2,10 @@ package com.TraderM.TraderM.application.controller;
 
 import com.TraderM.TraderM.application.service.CoinService;
 import com.TraderM.TraderM.domain.model.Coin;
+import com.TraderM.TraderM.presentation.dto.request.CoinReqDto;
+import com.TraderM.TraderM.presentation.dto.request.UpdateCoinReqDto;
+import com.TraderM.TraderM.presentation.dto.response.CoinResDto;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +20,7 @@ public class CoinController {
 
 
     @PostMapping("/addCoin/{userId}")
-    public ResponseEntity<Coin> addCoin(@PathVariable UUID userId, @RequestBody Coin coin) {
+    public ResponseEntity<CoinResDto> addCoin(@PathVariable UUID userId, @RequestBody @Valid CoinReqDto coin) {
         return ResponseEntity.ok(coinService.addCoin(userId, coin));
     }
 
@@ -27,7 +31,7 @@ public class CoinController {
     }
 
     @PutMapping("/updateCoin/{ownerId}")
-    public ResponseEntity<Coin> updateCoinPrice(@RequestBody Coin coin , @PathVariable UUID ownerId) {
+    public ResponseEntity<CoinResDto> updateCoinPrice(@RequestBody @Valid UpdateCoinReqDto coin , @PathVariable UUID ownerId) {
         System.out.println("im here");
         return ResponseEntity.ok(coinService.updateCoin(coin,ownerId));
     }

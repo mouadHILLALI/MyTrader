@@ -5,8 +5,12 @@ import com.TraderM.TraderM.domain.model.Coin;
 import com.TraderM.TraderM.domain.model.User;
 import com.TraderM.TraderM.domain.repository.CoinRepository;
 import com.TraderM.TraderM.domain.repository.UserRepository;
+import com.TraderM.TraderM.presentation.dto.request.CoinReqDto;
+import com.TraderM.TraderM.presentation.dto.request.UpdateCoinReqDto;
+import com.TraderM.TraderM.presentation.dto.response.CoinResDto;
 import com.TraderM.TraderM.presentation.exception.customExceptions.NoCoinWasFoundException;
 import com.TraderM.TraderM.presentation.exception.customExceptions.NoUserWasFound;
+import com.TraderM.TraderM.presentation.exception.customExceptions.SymbolAlreadyExistException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,11 +25,18 @@ public class CoinServiceImpl implements CoinService {
 
     @Transactional
     @Override
-    public Coin addCoin(UUID userId, Coin coin) {
+    public CoinResDto addCoin(UUID userId, CoinReqDto coin) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NoUserWasFound("User not found"));
-        coin.setOwner(user);
-        return coinRepository.save(coin);
+        Coin newCoin = Coin.builder()
+                .name(coin.name())
+                .price(coin.price())
+                .symbol(isSymbolUnique(coin.symbol()))
+                .build();
+        newCoin.setOwner(user);
+        newCoin.setSupply(coin.supply());
+        newCoin = coinRepository.save(newCoin);
+        return new CoinResDto(newCoin.getId() , newCoin.getName() , newCoin.getSymbol() , newCoin.getPrice() , newCoin.getSupply());
     }
 
     @Transactional
@@ -38,17 +49,24 @@ public class CoinServiceImpl implements CoinService {
 
     @Transactional
     @Override
-    public Coin updateCoin(Coin coin, UUID ownerId) {
-        Coin existingCoin = coinRepository.findById(coin.getId())
+    public CoinResDto updateCoin(UpdateCoinReqDto coin, UUID ownerId) {
+        Coin existingCoin = coinRepository.findById(coin.id())
                 .orElseThrow(() -> new NoCoinWasFoundException("Coin not found"));
 
         existingCoin.setOwner(findUserById(ownerId));
-        existingCoin.updatePrice(coin.getPrice());
-        return coinRepository.save(existingCoin);
+        existingCoin.setSupply(coin.supply());
+        existingCoin.setName(coin.name());
+        existingCoin = coinRepository.save(existingCoin);
+        return new CoinResDto(existingCoin.getId() , existingCoin.getName() , existingCoin.getSymbol() , existingCoin.getPrice() , existingCoin.getSupply());
     }
 
 
     private User findUserById(UUID userId) {
         return userRepository.findById(userId).orElseThrow(() -> new NoUserWasFound("User not found"));
+    }
+
+    private String isSymbolUnique(String symbol) {
+        if (coinRepository.findBySymbol(symbol) != null) throw new SymbolAlreadyExistException("symbol already exist");
+        return symbol;
     }
 }

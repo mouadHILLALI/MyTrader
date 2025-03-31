@@ -29,7 +29,7 @@ public class JwtService {
                         .map(grantedAuthority -> grantedAuthority.getAuthority())
                         .toList()) // Convert to list
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60)) // 1-hour expiry
+                .setExpiration(new Date(System.currentTimeMillis() + 1000L * 60 * 60 * 24)) // 1-day expiry
                 .signWith(Keys.hmacShaKeyFor(getSecretKeyBytes()), SignatureAlgorithm.HS256)
                 .compact();
     }

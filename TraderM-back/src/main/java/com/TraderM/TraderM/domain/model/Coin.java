@@ -1,5 +1,6 @@
 package com.TraderM.TraderM.domain.model;
 
+import com.TraderM.TraderM.presentation.exception.customExceptions.SupplyCannotBeNegative;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
@@ -28,6 +29,19 @@ public class Coin {
 
     public void updatePrice(double newPrice) {
         this.price = newPrice;
+    }
+
+    public void setSupply(long supply) {
+        if(supply < 0) throw new SupplyCannotBeNegative("supply cannot be negative");
+        this.supply = supply;
+    }
+
+    public String setName(String name) {
+        if (!name.isBlank()){
+            this.name = name;
+            return name;
+        }
+        return null;
     }
 
     public void setOwner(User owner) {
