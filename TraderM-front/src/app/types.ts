@@ -40,3 +40,22 @@ export interface AuthResponse {
 export interface AppState {
   user: UserState;  
 }
+
+
+ export interface Asset {
+  name: string;
+  symbol: string;
+  amount: number;
+  value: number;
+  change: number;
+  color: string;
+}
+
+export interface Transaction {
+  type: string;
+  asset: string;
+  amount: number;
+  value: number;
+  date: string;
+  status: string;
+}
