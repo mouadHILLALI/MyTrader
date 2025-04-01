@@ -1,11 +1,22 @@
 import { createAction, props } from '@ngrx/store';
+import { User } from '../../types';
 
-export const loadUsers = createAction('[User] Load Users');
-export const loadUsersSuccess = createAction(
-  '[User] Load Users Success',
-  props<{ users: any[] }>()
+export const loadUsers = createAction(
+  '[User] Load User',
+  props<{ token: string }>()
 );
+
+export const loadUsersSuccess = createAction(
+  '[User] Load User Success',
+  props<{ user: User }>()
+);
+
 export const loadUsersFailure = createAction(
-  '[User] Load Users Failure',
+  '[User] Load User Failure',
   props<{ error: string }>()
+);
+
+export const setUser = createAction(
+  '[User] Set User',  
+  props<{ user: User }>()  
 );

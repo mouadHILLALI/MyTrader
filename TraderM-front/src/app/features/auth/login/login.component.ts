@@ -3,18 +3,19 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { AuthService } from '../auth.service';
 import { loginFailure, loginSuccess } from '../../../app/actions/auth.actions';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css'], // ✅ Fixed plural
+  styleUrls: ['./login.component.css'], 
   standalone: false
 })
 export class LoginComponent {
   loginForm: FormGroup;
   hidePassword = true;
 
-  constructor(private fb: FormBuilder, private store: Store, private authService: AuthService) {
+  constructor(private fb: FormBuilder, private store: Store, private authService: AuthService , private router : Router) {
     this.loginForm = this.fb.group({
       username: ['', [Validators.required]],
       password: ['', [Validators.required, Validators.minLength(6)]]
@@ -31,7 +32,7 @@ export class LoginComponent {
   onLogin(username: string, password: string) {
     this.authService.login(username, password).subscribe({
       next: (response) => {
-        this.store.dispatch(loginSuccess({ user: response.user, token: response.token }));
+        console.log(response);
       },
       error: (err) => {
         this.store.dispatch(loginFailure({ error: err.message }));

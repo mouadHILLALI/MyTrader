@@ -1,3 +1,4 @@
+import { UUID } from "crypto";
 
 export interface CryptoCoin {
     name: string;
@@ -12,15 +13,30 @@ export interface NavLinks {
   }
 
 export interface User {
-  id: string;
+  userId: string;
   username: string;
-  role?: string;
+  role: string;
   token : string;
+  isTwoFactorEnabled : boolean;
+  authorities:[]
   }
 
 export interface UserState{
     user : User;
     loading: boolean;
     error: string | null;
+    token : string;
+    
 }
-  
+
+export interface AuthResponse {
+  userId : string,
+  username: string;
+  token: string;
+  role: string;
+  isTwoFactorEnabled: boolean;
+}
+
+export interface AppState {
+  user: UserState;  
+}

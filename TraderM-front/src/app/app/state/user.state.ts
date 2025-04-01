@@ -1,9 +1,6 @@
-import { UserState } from "../../types";
+import { User } from "../../types";
 
-export const initialUserState: UserState = {
-    user: {
-       id : "" , username:'' ,  role : "" , token:""
-    },
-    loading: false,
-    error: null,
+export const initialUserState: User = {
+      userId: "" , username: '', role: '', token: '' ,
+   
   };
