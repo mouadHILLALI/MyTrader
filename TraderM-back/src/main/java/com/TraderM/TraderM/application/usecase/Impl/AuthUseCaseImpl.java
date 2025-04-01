@@ -33,10 +33,10 @@ public class AuthUseCaseImpl implements AuthUseCase {
                 .role("ROLE_USER")
                 .build();
 
-        userRepository.save(user);
+        user = userRepository.save(user);
         String token = jwtService.generateToken(user);
 
-        return new AuthResDto(user.getUsername(), token, user.getRole(), null, user.isTwoFactorAuth());
+        return new AuthResDto(user.getId() ,user.getUsername(), token, user.getRole(), null, user.isTwoFactorAuth());
     }
 
     public AuthResDto login(AuthReqLoginDto request) {
@@ -49,6 +49,6 @@ public class AuthUseCaseImpl implements AuthUseCase {
         User user = userOptional.get();
         String token = jwtService.generateToken(user);
 
-        return new AuthResDto(user.getUsername(), token, user.getRole(), null, user.isTwoFactorAuth());
+        return new AuthResDto( user.getId() , user.getUsername(), token, user.getRole(), null, user.isTwoFactorAuth());
     }
 }
