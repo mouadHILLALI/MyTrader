@@ -1,12 +1,22 @@
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { AuthInterceptor } from '../core/interceptors/auth.interceptor';
 
 
 @Component({
   selector: 'app-root',
-  imports: [RouterModule ],
+  imports: [RouterModule],
   styleUrl: './app.component.css',
-  template: '<router-outlet></router-outlet>'
+  standalone: true,
+  template: '<router-outlet></router-outlet>',
+  providers: [
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor, 
+      multi: true
+    }
+  ],
 })
 export class AppComponent {
 

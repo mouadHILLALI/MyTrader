@@ -1,6 +1,6 @@
 import { createReducer, on } from '@ngrx/store';
 import { setUser, loadUsersSuccess, loadUsersFailure } from '../actions/user.actions';
-import { User } from '../../types';
+import { User } from '../../../types';
 
 export interface UserState {
   user: User | null;
@@ -34,3 +34,4 @@ export const userReducer = createReducer(
     loading: false,
   }))
 );
+

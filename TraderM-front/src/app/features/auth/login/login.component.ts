@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { AuthService } from '../auth.service';
-import { loginFailure, loginSuccess } from '../../../app/actions/auth.actions';
+import { loginFailure, loginSuccess } from '../../../app/store/actions/auth.actions';
 import { Router } from '@angular/router';
 
 @Component({

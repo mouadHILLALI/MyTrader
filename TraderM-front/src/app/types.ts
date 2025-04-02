@@ -1,4 +1,3 @@
-import { UUID } from "crypto";
 
 export interface CryptoCoin {
     name: string;
@@ -22,7 +21,7 @@ export interface User {
   }
 
 export interface UserState{
-    user : User;
+    user : User | null;
     loading: boolean;
     error: string | null;
     token : string;
@@ -58,4 +57,12 @@ export interface Transaction {
   value: number;
   date: string;
   status: string;
+}
+
+export interface Coin{
+  coinId : string;
+  name:string;
+  symbol:string;
+  price:number;
+  supply:number;
 }

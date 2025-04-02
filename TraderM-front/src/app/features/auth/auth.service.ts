@@ -5,9 +5,8 @@ import { Observable, tap } from 'rxjs';
 import { environment } from '../../../enviroments/enviroment';
 import { AuthResponse, User } from '../../types';
 import { select, Store } from '@ngrx/store';
-import { setUser } from '../../../app/app/actions/user.actions';
-import { log } from 'console';
-import { selectUser } from '../../app/selectors/user.selectors';
+import { setUser } from '../../../app/app/store/actions/user.actions';
+import { selectUser } from '../../app/store/selectors/user.selectors';
 
 @Injectable({
   providedIn: 'root',
@@ -28,9 +27,17 @@ export class AuthService {
         if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
           localStorage.setItem('token', response.token);  
           this.store.dispatch(setUser({ user: response }));
-          this.store.pipe(select(selectUser)).subscribe(user => {
-            console.log('🔍 Store user after login:', user);
-          });
+          this.redirectUserBasedOnRole(response.role);
+        }
+      })
+    );
+  }
+  register(username: string, password: string): Observable<User> {
+    return this.http.post<User>(`${this.apiUrl}/auth/register`, { username, password }).pipe(
+      tap((response: User) => {
+        if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+          localStorage.setItem('token', response.token);
+          this.store.dispatch(setUser({ user: response }));
           this.redirectUserBasedOnRole(response.role);
         }
       })

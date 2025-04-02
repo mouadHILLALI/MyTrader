@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
-import { Asset, Transaction } from '../../types';
+import { Asset, Transaction } from '../../../types';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { CoinService } from '../../../core/services/coin/coin.service';
 
 @Component({
   selector: 'app-user-dashboard',
@@ -11,7 +13,8 @@ export class UserDashboardComponent {
   totalBalance: number = 24586.40;
   totalProfit: number = 1245.23;
   profitPercentage: number = 5.3;
-  
+  showLaunchModal = false;
+  launchForm: FormGroup;
   assets: Asset[] = [
     { name: 'Bitcoin', symbol: 'BTC', amount: 0.8942, value: 15234.23, change: 2.4, color: 'bg-orange-500' },
     { name: 'Ethereum', symbol: 'ETH', amount: 3.7842, value: 6453.12, change: 1.2, color: 'bg-blue-500' },
@@ -34,9 +37,45 @@ export class UserDashboardComponent {
     { name: 'Ripple', price: 0.62, change: 0.8 }
   ];
 
-  constructor() { }
+  constructor(private fb: FormBuilder, private coinService : CoinService) {
+    this.launchForm = this.fb.group({
+      name: ['', [Validators.required]],
+      symbol: ['', [Validators.required, Validators.maxLength(5)]],
+      price: ['', [Validators.required, Validators.min(1)]],
+      supply: ['']
+    });
+  }
+  toggleLaunchModal(): void {
+    this.showLaunchModal = !this.showLaunchModal;
+    if (!this.showLaunchModal) {
+      this.launchForm.reset({
+        tokenType: 'ERC20',
+        decimals: 18
+      });
+    }
+  }
+  
+  submitLaunchForm(): void {
+    if (this.launchForm.valid) {
+      console.log('Form submitted:', this.launchForm.value);
+  
+      this.coinService.addCoin(this.launchForm.value).subscribe(
+        (response) => {
+          console.log('Coin added successfully:', response);
+          this.toggleLaunchModal();
+        },
+        (error) => {
+          console.error('Error adding coin:', error);
+        }
+      );
+    } else {
+      Object.keys(this.launchForm.controls).forEach((key) => {
+        this.launchForm.get(key)?.markAsTouched();
+      });
+    }
+  }
+  
 
   ngOnInit(): void {
-    // You could fetch real user data here from an API
   }
 }
