@@ -12,7 +12,6 @@ export class AuthInterceptor implements HttpInterceptor {
     if (isPlatformBrowser(this.platformId)) {
       try {
         const token = localStorage.getItem('token');
-        
         if (token) {
           request = request.clone({
             setHeaders: {

@@ -17,7 +17,6 @@ export class CoinService {
     this.store.pipe(select(selectUser)).subscribe(user => {
       if (user?.userId) {
         this.userId$.next(user.userId); 
-        console.log('Initialized User ID:', user.userId);
       }
     });
   }
@@ -26,17 +25,19 @@ export class CoinService {
     return this.http.get<Coin[]>(`${this.apiUrl}/coins/allCoins`);
   }
 
+  getCoinsByOwner(): Observable<Coin[]> {
+    return this.http.get<Coin[]>(`${this.apiUrl}/coins/getCoins/${this.userId$.value}`);
+  }
+
   getCoinById(coinId: string): Observable<Coin> {
     return this.http.get<Coin>(`${this.apiUrl}/coins/getCoin/${coinId}`);
   }
 
   addCoin(coin: Coin): Observable<Coin> {
-    console.log('addCoin called with coin:', coin); 
     return this.userId$.pipe(
       take(1),
       switchMap((userId) => {
         if (userId) {
-          console.log('Making request with userId:', userId); 
           return this.http.post<Coin>(`${this.apiUrl}/coins/addCoin/${userId}`, coin);
         } else {
           throw new Error('User ID not found');
@@ -45,7 +46,7 @@ export class CoinService {
     );
   }
   
-
+ 
   updateCoin(coinId: string, coin: Coin): Observable<Coin> {
     return this.http.put<Coin>(`${this.apiUrl}/coins/updateCoin/${coinId}`, coin);
   }

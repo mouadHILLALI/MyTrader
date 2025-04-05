@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
-import { NavBarService } from '../../shared/nav-bar/navBarService';
+import { NavbarService } from '../../shared/nav-bar/navBarService';
 
 @Injectable({ providedIn: 'root' })
 export class LogoutGuard implements CanActivate {
   constructor(
-    private navBarService: NavBarService,
+    private navBarService: NavbarService,
     private router: Router
   ) {}
 

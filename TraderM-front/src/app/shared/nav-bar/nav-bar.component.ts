@@ -1,36 +1,25 @@
-import { Component, OnInit } from '@angular/core';
-import { NavBarService } from './navBarService';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { Observable } from 'rxjs';
 import { NavLinks } from '../../types';
+import { NavbarService } from './navBarService';
 
 @Component({
   selector: 'app-nav-bar',
   templateUrl: './nav-bar.component.html',
   styleUrls: ['./nav-bar.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   standalone:false
 })
-export class NavBarComponent implements OnInit {
-  public navLinks: NavLinks[] = [];
-  public isAuth: boolean = false;  
+export class NavBarComponent {
+  public navLinks$: Observable<NavLinks[]>;
+  public isAuth$: Observable<boolean>;
 
-  constructor(private readonly navService: NavBarService) {}
-
-  ngOnInit(): void {
-    this.navService.getNavLinks().subscribe({
-      next: (links) => {
-        this.navLinks = links;  
-      },
-      error: (err) => {
-        console.error("Error fetching navigation links:", err);  
-      }
-    });
-
-    this.navService.isAuthenticated$.subscribe({
-      next: (authenticated) => {
-        this.isAuth = authenticated;  
-      },
-      error: (err) => {
-        console.error("Error checking authentication status:", err);  
-      }
-    });
+  constructor(private readonly navService: NavbarService) {
+    this.navLinks$ = this.navService.navLinks$;
+    this.isAuth$ = this.navService.isAuthenticated$;
   }
+  logout(): void {
+    this.navService.logout();
+  }
+
 }

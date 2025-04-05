@@ -5,10 +5,10 @@ import { CoinService } from '../services/coin/coin.service';
 import { Coin } from '../../types';
 
 @Injectable({ providedIn: 'root' })
-export class MarketResolver implements Resolve<any> {
+export class WalletResolver implements Resolve<any> {
   constructor(private coinService: CoinService) {}
 
   resolve(): Observable<Coin[]> {
-    return this.coinService.getCoins();
+    return this.coinService.getCoinsByOwner();
   }
 }

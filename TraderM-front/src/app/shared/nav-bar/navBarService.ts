@@ -1,79 +1,75 @@
-import { Injectable } from "@angular/core";
-import { Store, select } from '@ngrx/store';
-import { map, Observable, combineLatest, of } from 'rxjs';
-import { NavLinks, User } from "../../types";
-import { selectUser, selectIsAuthenticated } from '../../app/store/selectors/user.selectors'; 
-import { loadUsers } from '../../app/store/actions/user.actions'; 
-import { filter, startWith, catchError } from 'rxjs/operators';
+import { Injectable } from '@angular/core';
+import { Store } from '@ngrx/store';
+import { combineLatest, Observable, BehaviorSubject, of } from 'rxjs';
+import { map, catchError } from 'rxjs/operators';
+import { NavLinks, User } from '../../types';
+import { logoutUser } from '../../app/store/actions/user.actions';
+import { selectIsAuthenticated, selectUser } from '../../app/store/selectors/user.selectors';
 
-@Injectable({
-    providedIn: 'root'
-})
-export class NavBarService {
-    private user$: Observable<User| null>;
-    public isAuthenticated$: Observable<boolean>;
 
-    constructor(private store: Store) {
-        this.user$ = this.store.pipe(
-            select(selectUser)
-        );
-        this.isAuthenticated$ = this.store.pipe(
-            select(selectIsAuthenticated),
-            startWith(false)
-        );
+@Injectable({ providedIn: 'root' })
+export class NavbarService {
+  private navLinksSubject = new BehaviorSubject<NavLinks[]>(this.getDefaultLinks());
+  private authSubject = new BehaviorSubject<boolean>(false);
 
-        this.loadUserFromLocalStorage();
+  public navLinks$ = this.navLinksSubject.asObservable();
+  public isAuthenticated$ = this.authSubject.asObservable();
+
+  constructor(private store: Store) {
+    this.initializeStateMonitoring();
+  }
+
+  private initializeStateMonitoring(): void {
+    combineLatest([
+      this.store.select(selectIsAuthenticated),
+      this.store.select(selectUser)
+    ]).pipe(
+      map(([authenticated, user]) => {
+        this.authSubject.next(authenticated); 
+        return this.buildNavLinks(authenticated, user);
+      })
+    ).subscribe(links => this.navLinksSubject.next(links));
+  }
+
+  public buildNavLinks(authenticated: boolean, user: User | null): NavLinks[] {
+    if (authenticated && user) {
+      return this.getAuthenticatedLinks(user.role);
     }
+    return this.getDefaultLinks();
+  }
 
-    private loadUserFromLocalStorage(): void {
-        if (typeof window !== 'undefined' && window.localStorage) {
-            const token = localStorage.getItem('token');
-            if (token) {
-                this.store.dispatch(loadUsers({ token }));
-            }
-        }
+  public getAuthenticatedLinks(role: string): NavLinks[] {
+    switch(role) {
+      case 'ROLE_USER':
+        return [
+          { title: 'Dashboard', Link: '/user/dashboard' },
+          { title: 'Market', Link: '/user/market' },
+          { title: 'MyWallet', Link: '/user/wallet' },
+          { title: 'Logout', Link: '/logout' }
+        ];
+      case 'ROLE_ADMIN':
+        return [
+          { title: 'Dashboard', Link: '/admin/dashboard' },
+          { title: 'Profile', Link: '/admin/profile' },
+          { title: 'Logout', Link: '/logout' }
+        ];
+      default:
+        return this.getDefaultLinks();
     }
+  }
 
-    public getNavLinks(): Observable<NavLinks[]> {
-        return combineLatest([
-            this.isAuthenticated$,
-            this.user$ 
-        ]).pipe(
-            map(([authenticated, user]): NavLinks[] => {
-                if (authenticated && user) {
-                    switch(user.role) {
-                        case 'ROLE_USER':
-                            return [
-                                { title: 'Dashboard', Link: '/user/dashboard' },
-                                { title: 'Market', Link: '/user/market' },
-                                { title: 'MyWallet', Link: '/user/wallet' },
-                                { title: 'Logout', Link: '/logout' }
-                            ];
-                        case 'ROLE_ADMIN':
-                            return [
-                                { title: 'Dashboard', Link: '/admin/dashboard' },
-                                { title: 'Profile', Link: '/admin/profile' },
-                                { title: 'Logout', Link: '/logout' }
-                            ];
-                    }
-                }
-                return [
-                    { title: 'Home', Link: '/' },
-                    { title: 'Login', Link: '/auth/login' },
-                    { title: 'Register', Link: '/auth/register' }
-                ];
-            }),
-            catchError(() => of([
-                { title: 'Home', Link: '/' },
-                { title: 'Login', Link: '/auth/login' },
-                { title: 'Register', Link: '/auth/register' }
-            ]))
-        );
+  public getDefaultLinks(): NavLinks[] {
+    return [
+      { title: 'Home', Link: '/' },
+      { title: 'Login', Link: '/auth/login' },
+      { title: 'Register', Link: '/auth/register' }
+    ];
+  }
+
+  public logout(): void {
+    this.store.dispatch(logoutUser());
+    if (typeof window !== 'undefined' && window.localStorage) {
+      localStorage.removeItem('token');
     }
-
-    public logout(): void {
-      if (typeof window !== 'undefined' && window.localStorage) {
-          localStorage.removeItem('token');
-      }
   }
 }

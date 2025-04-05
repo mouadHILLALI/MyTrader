@@ -5,16 +5,15 @@
         CryptoVerse
       </div>
   
-      <!-- Navigation Links -->
       <div class="hidden md:flex space-x-8">
-        <a *ngFor="let navLink of navLinks" 
+        <a *ngFor="let navLink of navLinks$ | async" 
            [routerLink]="navLink.Link" 
            class="hover:text-blue-400 transition">
           {{ navLink.title }}
         </a>
       </div>
   
-      <div *ngIf="!isAuth">
+      <div *ngIf="!isAuth$">
         <button class="bg-gradient-to-r from-blue-500 to-purple-600 px-6 py-2 rounded-full font-medium 
                        hover:opacity-90 transition focus:ring focus:ring-blue-300">
           Get Started

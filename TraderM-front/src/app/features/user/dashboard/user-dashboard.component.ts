@@ -1,7 +1,10 @@
 import { Component } from '@angular/core';
-import { Asset, Transaction } from '../../../types';
+import { Asset, Transaction, User } from '../../../types';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CoinService } from '../../../core/services/coin/coin.service';
+import { Observable } from 'rxjs';
+import { Store } from '@ngrx/store';
+import { selectUser } from '../../../app/store/selectors/user.selectors';
 
 @Component({
   selector: 'app-user-dashboard',
@@ -10,6 +13,7 @@ import { CoinService } from '../../../core/services/coin/coin.service';
   standalone:false
 })
 export class UserDashboardComponent {
+  user$ : Observable<User| null>;
   totalBalance: number = 24586.40;
   totalProfit: number = 1245.23;
   profitPercentage: number = 5.3;
@@ -37,13 +41,14 @@ export class UserDashboardComponent {
     { name: 'Ripple', price: 0.62, change: 0.8 }
   ];
 
-  constructor(private fb: FormBuilder, private coinService : CoinService) {
+  constructor(private fb: FormBuilder, private coinService : CoinService , private store:Store) {
     this.launchForm = this.fb.group({
       name: ['', [Validators.required]],
       symbol: ['', [Validators.required, Validators.maxLength(5)]],
       price: ['', [Validators.required, Validators.min(1)]],
       supply: ['']
     });
+    this.user$ = this.store.select(selectUser);
   }
   toggleLaunchModal(): void {
     this.showLaunchModal = !this.showLaunchModal;
@@ -58,7 +63,6 @@ export class UserDashboardComponent {
   submitLaunchForm(): void {
     if (this.launchForm.valid) {
       console.log('Form submitted:', this.launchForm.value);
-  
       this.coinService.addCoin(this.launchForm.value).subscribe(
         (response) => {
           console.log('Coin added successfully:', response);
@@ -77,5 +81,6 @@ export class UserDashboardComponent {
   
 
   ngOnInit(): void {
+    
   }
 }
