@@ -14,4 +14,5 @@ public interface CoinService {
      void deleteCoin(UUID coin);
      List<CoinResDto> getCoins();
      CoinResDto getCoinById(UUID coinId);
+     List<CoinResDto> getCoinsByOwnerId(UUID ownerId);
 }

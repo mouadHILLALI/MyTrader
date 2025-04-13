@@ -9,7 +9,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -25,14 +27,13 @@ public class CoinController {
     }
 
     @DeleteMapping("/deleteCoin/{coinId}")
-    public ResponseEntity<String> removeCoin(@PathVariable UUID coinId) {
+    public ResponseEntity<Map<String, String>> removeCoin(@PathVariable UUID coinId) {
         coinService.deleteCoin(coinId);
-        return ResponseEntity.ok("Coin removed successfully");
+        return ResponseEntity.ok(Collections.singletonMap("message", "Coin removed successfully"));
     }
 
     @PutMapping("/updateCoin/{ownerId}")
     public ResponseEntity<CoinResDto> updateCoinPrice(@RequestBody @Valid UpdateCoinReqDto coin , @PathVariable UUID ownerId) {
-        System.out.println("im here");
         return ResponseEntity.ok(coinService.updateCoin(coin,ownerId));
     }
 
@@ -44,5 +45,10 @@ public class CoinController {
     @GetMapping("/getCoin/{coinId}")
     public ResponseEntity<CoinResDto> getCoinById(@PathVariable UUID coinId) {
         return ResponseEntity.ok(coinService.getCoinById(coinId));
+    }
+
+    @GetMapping("/getCoins/{ownerId}")
+    public ResponseEntity<List<CoinResDto>> getCoinsByOwnerId(@PathVariable UUID ownerId) {
+        return ResponseEntity.ok(coinService.getCoinsByOwnerId(ownerId));
     }
 }

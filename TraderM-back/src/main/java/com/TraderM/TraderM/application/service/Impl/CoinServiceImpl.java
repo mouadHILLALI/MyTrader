@@ -59,6 +59,11 @@ public class CoinServiceImpl implements CoinService {
         return new CoinResDto(coin.getId() , coin.getName() , coin.getSymbol(), coin.getPrice() , coin.getSupply());
     }
 
+    @Override
+    public List<CoinResDto> getCoinsByOwnerId(UUID ownerId) {
+        return coinRepository.findByOwnerId(ownerId).stream().map(coin -> new CoinResDto(coin.getId(),coin.getName(),coin.getSymbol(),coin.getPrice(),coin.getSupply())).toList();
+    }
+
     @Transactional
     @Override
     public CoinResDto updateCoin(UpdateCoinReqDto coin, UUID ownerId) {
