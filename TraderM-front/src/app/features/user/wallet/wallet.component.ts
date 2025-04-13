@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { Coin } from '../../../types';
 import { ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { CoinService } from '../../../core/services/coin/coin.service';
 
 
 interface Transaction {
@@ -109,11 +110,11 @@ export class WalletComponent implements OnInit {
   
   activeTab: 'assets' | 'transactions' | 'security' = 'assets';
   
-  constructor(private route: ActivatedRoute , private fb: FormBuilder,) { }
+  constructor(private route: ActivatedRoute , private fb: FormBuilder,private coinService :CoinService) { }
 
   ngOnInit(): void {
     this.route.data.subscribe(data => {
-      this.coinData = data['coinData']
+      this.coinData = data['coinData']      
     })
   }
 
@@ -134,9 +135,29 @@ export class WalletComponent implements OnInit {
         name: this.editForm.value.name,
         supply: Number(this.editForm.value.supply)
       };
-      console.log('Updated Coin:', updatedCoin);
-      this.closeModals();
+  
+      this.coinService.updateCoin(updatedCoin).subscribe({
+        next: () => {
+          this.coinService.getCoinsByOwner().subscribe(coins => {
+            this.coinData = coins;
+            this.closeModals();
+          });
+        },
+        error: (err) => {
+          console.error('Error updating coin:', err);
+        }
+      });
     }
+  }
+  
+  deleteCoin(coinID : string){
+    this.coinService.deleteCoin(coinID).subscribe({
+      next:()=>{
+        this.coinService.getCoinsByOwner().subscribe(coins => {
+          this.coinData = coins;
+        })
+      }
+    });
   }
   
   

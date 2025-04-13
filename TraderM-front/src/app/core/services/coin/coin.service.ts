@@ -47,8 +47,8 @@ export class CoinService {
   }
   
  
-  updateCoin(coinId: string, coin: Coin): Observable<Coin> {
-    return this.http.put<Coin>(`${this.apiUrl}/coins/updateCoin/${coinId}`, coin);
+  updateCoin(coin: any): Observable<Coin> {
+    return this.http.put<Coin>(`${this.apiUrl}/coins/updateCoin/${this.userId$.value}`, coin);
   }
 
   deleteCoin(coinId: string): Observable<void> {
