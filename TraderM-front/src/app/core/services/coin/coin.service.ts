@@ -25,6 +25,10 @@ export class CoinService {
     return this.http.get<Coin[]>(`${this.apiUrl}/coins/allCoins`);
   }
 
+  getCoinsToSell(): Observable<Coin[]> {
+    return this.http.get<Coin[]>(`${this.apiUrl}/coins/allCoins/${this.userId$.value}`);
+  }
+
   getCoinsByOwner(): Observable<Coin[]> {
     return this.http.get<Coin[]>(`${this.apiUrl}/coins/getCoins/${this.userId$.value}`);
   }

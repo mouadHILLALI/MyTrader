@@ -102,7 +102,7 @@
                   <div class="text-sm text-white">{{coin.supply.toLocaleString()}} {{coin.symbol.toUpperCase()}}</div>
                 </td>
                 <td class="px-6 py-5 whitespace-nowrap text-right">
-                  <button class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-medium text-xs text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-blue-500 transition-colors duration-150 ease-in-out">
+                  <button (click)="toggleBuyModal(coin)" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-medium text-xs text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-blue-500 transition-colors duration-150 ease-in-out">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                     </svg>
@@ -125,7 +125,55 @@
             </tbody>
           </table>
         </div>
-        
+
+
+        <form [formGroup]="buyForm" (ngSubmit)="executeTransaction()" *ngIf="showBuyModal" class="fixed inset-0 bg-black bg-opacity-50 z-40 flex items-center justify-center p-4">
+          <div class="bg-gray-800 rounded-xl shadow-xl w-full max-w-md relative z-50 animate-fadeIn">
+            <!-- Modal Header -->
+            <div class="p-6 border-b border-gray-700 flex justify-between items-center">
+              <button (click)="closeBuyModal()" class="text-gray-400 hover:text-white transition">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <!-- Modal Body -->
+            <div class="p-6">
+              <div class="space-y-4">
+                <div>
+                  <label for="coinSupply" class="block text-sm font-medium text-gray-400 mb-1">Coin Supply</label>
+                  <input 
+                    type="number" 
+                    id="coinSupply" 
+                    formControlName="supply"
+                    class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="coin Supply"
+                  >
+                </div>
+              </div>
+            </div>
+            
+            <!-- Modal Footer -->
+            <div class="p-6 border-t border-gray-700">
+              <div class="flex space-x-3">
+                <button 
+                  (click)="closeBuyModal()"
+                  class="flex-1 bg-gray-700 hover:bg-gray-600 text-white py-3 rounded-lg font-medium transition"
+                > 
+                  Cancel
+                </button>
+                <button 
+                [disabled]="buyForm.invalid"
+                type="submit"
+                  class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-medium transition"
+                >
+                  Buy
+                </button>
+              </div>
+            </div>
+          </div>
+        </form>
+
         <!-- Pagination -->
         <div class="px-6 py-4 bg-gray-750 border-t border-gray-700 flex flex-col sm:flex-row justify-between items-center gap-4">
           <div class="flex space-x-1">
@@ -232,85 +280,6 @@
             <span class="text-sm text-green-500">+23</span>
             <span class="text-sm text-gray-400 ml-2">new today</span>
           </div>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Buy Modal -->
-    <div *ngIf="showBuyModal" class="fixed inset-0 bg-black bg-opacity-50 z-40 flex items-center justify-center p-4">
-      <!-- Modal Content -->
-      <div class="bg-gray-800 rounded-xl shadow-xl w-full max-w-md relative z-50 animate-fadeIn">
-        <!-- Modal Header -->
-        <div class="p-6 border-b border-gray-700 flex justify-between items-center">
-          <h3 class="text-xl font-bold">Buy {{selectedCoin?.name}}</h3>
-          <button (click)="closeBuyModal()" class="text-gray-400 hover:text-white transition">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
-        
-        <!-- Modal Body -->
-        <div class="p-6">
-          <div class="flex items-center mb-6">
-            <div>
-              <div class="font-medium text-lg">{{selectedCoin?.name}}</div>
-            </div>
-          </div>
-          
-          <div class="space-y-4">
-            <!-- Amount Input -->
-            <div>
-              <label for="buyAmount" class="block text-sm font-medium text-gray-400 mb-1">Amount to buy</label>
-              <div class="relative">
-                <input 
-                  type="number" 
-                  id="buyAmount" 
-                  min="0"
-                  step="0.0001"
-                  class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="0.00"
-                >
-              </div>
-            </div>
-            
-            <!-- Total -->
-            <div class="bg-gray-700/50 p-4 rounded-lg">
-              <div class="flex justify-between items-center">
-                <span class="text-gray-400">Total cost</span>
-              </div>
-            </div>
-            
-            <!-- Payment Method -->
-            <div>
-              <label class="block text-sm font-medium text-gray-400 mb-1">Payment method</label>
-              <div class="bg-gray-700 border border-gray-600 rounded-lg p-3 flex items-center">
-                <div class="bg-blue-500/20 p-2 rounded-full mr-3">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                  </svg>
-                </div>
-                <div>
-                  <div class="font-medium">USD Wallet</div>
-                  <div class="text-sm text-gray-400">Balance: $12,345.67</div>
-                </div>
-                <div class="ml-auto">
-                  <button class="text-blue-400 text-sm">Change</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Modal Footer -->
-        <div class="p-6 border-t border-gray-700">
-          <button 
-            [disabled]="!buyAmount || buyAmount <= 0"
-            [ngClass]="{'opacity-50 cursor-not-allowed': !buyAmount || buyAmount <= 0}"
-            class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-medium transition"
-          >
-            Buy 
-          </button>
         </div>
       </div>
     </div>

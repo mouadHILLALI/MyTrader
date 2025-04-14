@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Coin } from '../../../types';
+import { MarketService } from '../../../core/services/market.service';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 
 @Component({
@@ -18,18 +20,19 @@ export class MarketComponent implements OnInit {
   showBuyModal: boolean = false;
   selectedCoin: Coin | null = null;
   buyAmount: number = 0;
+  buyForm!: FormGroup;
+  
   
   currentPage: number = 1;
   itemsPerPage: number = 10;
   
   marketData: any;
-
-  constructor(private route: ActivatedRoute) {}
+  coin : any;
+  constructor(private route: ActivatedRoute , private marketService : MarketService , private fb: FormBuilder) {}
 
   ngOnInit(): void {
     this.route.data.subscribe(data => {
       this.marketData = data['marketData'];
-      console.log(this.marketData);
     });    
   
     this.applyFilters();
@@ -79,18 +82,28 @@ export class MarketComponent implements OnInit {
     
     return this.sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down';
   }
-  
-  openBuyModal(coin: Coin): void {
-    this.selectedCoin = coin;
-    this.buyAmount = 0;
-    this.showBuyModal = true;
+
+  toggleBuyModal(coin:any){
+    this.showBuyModal = !this.showBuyModal;
+    this.coin = coin;
+    this.buyForm = this.fb.group({
+          supply: [Validators.required]
+        });
+  }
+
+  closeBuyModal(){
+    this.showBuyModal = !this.showBuyModal;
+  }
+
+  executeTransaction(){ 
+    const transaction = {
+      amount :this.buyForm.value.supply ,
+      coinId : this.coin.id
+    }
+    this.marketService.executeTransaction(transaction);
+    this.closeBuyModal();
   }
   
-  closeBuyModal(): void {
-    this.showBuyModal = false;
-    this.selectedCoin = null;
-    this.buyAmount = 0;
-  }
   
 
   

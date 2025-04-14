@@ -9,6 +9,6 @@ export class MarketResolver implements Resolve<any> {
   constructor(private coinService: CoinService) {}
 
   resolve(): Observable<Coin[]> {
-    return this.coinService.getCoins();
+    return this.coinService.getCoinsToSell();
   }
 }
