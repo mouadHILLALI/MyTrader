@@ -37,4 +37,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorRes> handleSupplyCannotBeNegative(SupplyCannotBeNegative e , HttpServletRequest request) {
         return ResponseEntity.badRequest().body(new ErrorRes(LocalDateTime.now(),400,e.getMessage(), request.getRequestURI()));
     }
+
+    @ExceptionHandler(InvalidTransactionAmount.class)
+    public ResponseEntity<ErrorRes> handleInvalidTransactionAmount(InvalidTransactionAmount e , HttpServletRequest request) {
+        return ResponseEntity.badRequest().body(new ErrorRes(LocalDateTime.now(),400,e.getMessage(), request.getRequestURI()));
+    }
 }

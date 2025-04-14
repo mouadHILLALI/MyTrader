@@ -15,4 +15,5 @@ public interface CoinService {
      List<CoinResDto> getCoins();
      CoinResDto getCoinById(UUID coinId);
      List<CoinResDto> getCoinsByOwnerId(UUID ownerId);
+     List<CoinResDto> getCoinsToSell(UUID ownerId);
 }

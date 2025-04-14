@@ -42,6 +42,11 @@ public class CoinController {
         return ResponseEntity.ok(coinService.getCoins());
     }
 
+    @GetMapping("/allCoins/{ownerID}")
+    public ResponseEntity<List<CoinResDto>> getAllCoins(@PathVariable UUID ownerID) {
+        return ResponseEntity.ok(coinService.getCoinsToSell(ownerID));
+    }
+
     @GetMapping("/getCoin/{coinId}")
     public ResponseEntity<CoinResDto> getCoinById(@PathVariable UUID coinId) {
         return ResponseEntity.ok(coinService.getCoinById(coinId));
