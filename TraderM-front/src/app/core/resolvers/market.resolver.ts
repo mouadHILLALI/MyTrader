@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Resolve } from '@angular/router';
 import { Observable } from 'rxjs';
-import { CoinService } from '../services/coin/coin.service';
+import { CoinService } from '../services/coin.service';
 import { Coin } from '../../types';
 
 @Injectable({ providedIn: 'root' })

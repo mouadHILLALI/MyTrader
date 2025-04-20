@@ -1,10 +1,10 @@
 import { Injectable } from "@angular/core";
-import { environment } from "../../../../enviroments/enviroment";
 import { HttpClient } from "@angular/common/http";
 import { Observable, BehaviorSubject, take, switchMap } from "rxjs";
-import { Coin } from "../../../types";
 import { select, Store } from "@ngrx/store";
-import { selectUser } from "../../../app/store/selectors/user.selectors";
+import { environment } from "../../../enviroments/enviroment";
+import { Coin } from "../../types";
+import { selectUser } from "../../app/store/selectors/user.selectors";
 
 @Injectable({
   providedIn: 'root'

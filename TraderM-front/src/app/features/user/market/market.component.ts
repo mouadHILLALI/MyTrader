@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Coin } from '../../../types';
 import { MarketService } from '../../../core/services/market.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { error } from 'node:console';
 
 
 @Component({
@@ -100,7 +101,15 @@ export class MarketComponent implements OnInit {
       amount :this.buyForm.value.supply ,
       coinId : this.coin.id
     }
-    this.marketService.executeTransaction(transaction);
+    this.marketService.executeTransaction(transaction).subscribe(
+      {
+        next : (res) => console.log(res),
+        complete : ()=> console.log("transaction init"),
+        error(err) {
+          console.error(err);
+        },
+      }
+    );
     this.closeBuyModal();
   }
   

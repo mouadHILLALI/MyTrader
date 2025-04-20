@@ -8,7 +8,7 @@ import { selectUser } from "../../app/store/selectors/user.selectors";
 @Injectable({
   providedIn: 'root'
 })
-export class MarketService{
+export class TransactionService{
       private apiUrl = environment.apiUrl;
       private userId$ = new BehaviorSubject<string | null>(null); 
   
@@ -20,22 +20,13 @@ export class MarketService{
       });
     }
 
-    executeTransaction(transaction: any): Observable<any> {
-        return this.userId$.pipe(
-          take(1),
-          switchMap((userId) => {
-            // if (userId) {
-              const newTransaction = {
-                amount: transaction.amount,
-                coinId: transaction.coinId,
-                buyerId: userId
-              };
-              console.log("transaction here" , newTransaction);
-              return this.http.post<any>(`${this.apiUrl}/transactions/execute`, newTransaction);
-            // } else {
-            //   throw new Error('User ID not found');
-            // }
-          })
-        );
-      }      
+    public fetchAllTransactionsBySeller() : Observable<any[]> {
+      return this.userId$.pipe(
+        take(1),
+        switchMap((userId) => {
+            return this.http.get<any>(`${this.apiUrl}/transactions/getAllTransactions/${userId}`);
+        })
+      ); 
+    }
+    
 }

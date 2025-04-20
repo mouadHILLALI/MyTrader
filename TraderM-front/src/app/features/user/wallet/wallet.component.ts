@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { Coin } from '../../../types';
 import { ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { CoinService } from '../../../core/services/coin/coin.service';
+import { CoinService } from '../../../core/services/coin.service';
 
 
 interface Transaction {
@@ -31,6 +31,7 @@ export class WalletComponent implements OnInit {
   totalProfit: number = 1245.23;
   profitPercentage: number = 5.3;
   coinData : any;
+  transactionsData : any;
   showEditModal: boolean = false;
   selectedCoin !: Coin | null;
   editForm!: FormGroup;
@@ -114,9 +115,14 @@ export class WalletComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.data.subscribe(data => {
-      this.coinData = data['coinData']      
-    })
+      this.coinData = data['coinData'].coinData; 
+      this.transactionsData = data['coinData'].transactionsData; 
+    });
+  
+    console.log(this.coinData);
+    console.log(this.transactionsData); 
   }
+  
 
   openEditModal(coin: Coin) {
     this.selectedCoin = coin;

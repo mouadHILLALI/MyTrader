@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Asset, Transaction, User } from '../../../types';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { CoinService } from '../../../core/services/coin/coin.service';
+import { CoinService } from '../../../core/services/coin.service';
 import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { selectUser } from '../../../app/store/selectors/user.selectors';
