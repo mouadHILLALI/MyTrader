@@ -2,9 +2,13 @@ package com.TraderM.TraderM.domain.model;
 
 import com.TraderM.TraderM.presentation.exception.customExceptions.SupplyCannotBeNegative;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -22,6 +26,10 @@ public class Coin {
     private String symbol;
     private double price;
     private long supply;
+    @OneToMany(mappedBy = "coin", fetch = FetchType.LAZY)
+    @JsonManagedReference("transaction-coin")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private List<Transaction> transactions;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JsonBackReference

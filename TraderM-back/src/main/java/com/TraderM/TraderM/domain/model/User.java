@@ -2,9 +2,12 @@ package com.TraderM.TraderM.domain.model;
 
 import com.TraderM.TraderM.presentation.exception.customExceptions.NoCoinWasFoundException;
 import com.TraderM.TraderM.presentation.exception.customExceptions.SymbolAlreadyExistException;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -24,6 +27,15 @@ public class User implements UserDetails {
     private String password;
     private boolean twoFactorAuth;
     private String role;
+    @OneToMany(mappedBy = "buyer")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JsonBackReference("transaction-buyer")
+    private List<Transaction> boughtTransactions;
+
+    @OneToMany(mappedBy = "seller")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JsonBackReference("transaction-seller")
+    private List<Transaction> soldTransactions;
 
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference

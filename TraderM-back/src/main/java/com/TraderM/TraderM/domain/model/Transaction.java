@@ -1,12 +1,18 @@
 package com.TraderM.TraderM.domain.model;
 
 import com.TraderM.TraderM.presentation.exception.customExceptions.InvalidTransactionAmount;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -20,11 +26,17 @@ public class Transaction {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
     private long amount;
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL)
+    @OnDelete(action = OnDeleteAction.SET_NULL)
+    @JsonManagedReference("transaction-buyer")
     private User buyer;
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL)
+    @OnDelete(action = OnDeleteAction.SET_NULL)
+    @JsonManagedReference("transaction-seller")
     private User seller;
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL)
+    @OnDelete(action = OnDeleteAction.SET_NULL)
+    @JsonBackReference("transaction-coin")
     private Coin coin;
     private String status;
 

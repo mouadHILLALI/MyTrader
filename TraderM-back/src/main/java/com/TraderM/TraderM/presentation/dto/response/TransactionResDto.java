@@ -9,9 +9,9 @@ import java.util.UUID;
 public record TransactionResDto(
         UUID id ,
         long amount ,
-        Coin coin,
-        User buyer,
-        User seller,
+        CoinResDto coin,
+        UserResDto buyer,
+        UserResDto seller,
         String status
 ) {
 }

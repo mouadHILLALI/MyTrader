@@ -5,10 +5,10 @@ import com.TraderM.TraderM.presentation.dto.request.TransactionReqDto;
 import com.TraderM.TraderM.presentation.dto.response.TransactionResDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/transactions")
@@ -19,5 +19,10 @@ public class TransactionController {
     @PostMapping("/execute")
     public TransactionResDto executeTransaction(@RequestBody @Valid TransactionReqDto transaction) {
         return transactionService.executeTransaction(transaction);
+    }
+
+    @GetMapping("/getAllTransactions/{sellerId}")
+    public List<TransactionResDto> fetchAllTransactions(@PathVariable UUID sellerId) {
+        return transactionService.fetchTransactionsBySeller(sellerId);
     }
 }
