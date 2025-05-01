@@ -9,6 +9,10 @@ import java.util.UUID;
 
 public interface TransactionService {
     TransactionResDto executeTransaction(TransactionReqDto transactionReqDto);
-    TransactionResDto validateTransaction();
+    TransactionResDto validateTransaction(UUID transactionId);
     List<TransactionResDto> fetchTransactionsBySeller(UUID sellerId);
+    long getTransactionCountByCoinId(UUID coinId);
+    TransactionResDto cancelTransaction(UUID transactionId);
+    long getAllTransactionCount();
+    List<TransactionResDto> fetchAllTransactions();
 }

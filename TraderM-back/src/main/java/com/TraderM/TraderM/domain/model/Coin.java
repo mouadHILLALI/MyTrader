@@ -8,7 +8,9 @@ import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -30,6 +32,11 @@ public class Coin {
     @JsonManagedReference("transaction-coin")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private List<Transaction> transactions;
+
+    @ManyToMany(mappedBy = "coins")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private Set<Wallet> wallets = new HashSet<>();
+
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JsonBackReference
@@ -54,5 +61,9 @@ public class Coin {
 
     public void setOwner(User owner) {
         this.owner = owner;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
     }
 }

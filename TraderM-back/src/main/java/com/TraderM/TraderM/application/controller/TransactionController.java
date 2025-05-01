@@ -25,4 +25,14 @@ public class TransactionController {
     public List<TransactionResDto> fetchAllTransactions(@PathVariable UUID sellerId) {
         return transactionService.fetchTransactionsBySeller(sellerId);
     }
+
+    @PutMapping("/approveTransaction/{transactionId}")
+    public TransactionResDto validateTransaction(@PathVariable UUID transactionId) {
+        return transactionService.validateTransaction(transactionId);
+    }
+
+    @PutMapping("/cancelTransaction/{transactionId}")
+    public TransactionResDto cancelTransaction(@PathVariable UUID transactionId) {
+        return transactionService.cancelTransaction(transactionId);
+    }
 }

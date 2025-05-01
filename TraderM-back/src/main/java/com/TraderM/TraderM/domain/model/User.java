@@ -32,6 +32,10 @@ public class User implements UserDetails {
     @JsonBackReference("transaction-buyer")
     private List<Transaction> boughtTransactions;
 
+    @OneToOne(cascade = CascadeType.ALL , fetch = FetchType.LAZY)
+    @JsonManagedReference("wallet-owner")
+    private Wallet wallet;
+
     @OneToMany(mappedBy = "seller")
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonBackReference("transaction-seller")

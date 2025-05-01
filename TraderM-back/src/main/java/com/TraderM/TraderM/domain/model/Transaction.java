@@ -55,4 +55,7 @@ public class Transaction {
     public void setCoin(Coin coin) {
         this.coin = coin;
     }
+    public void setStatus(String status) {
+        this.status = status;
+    }
 }

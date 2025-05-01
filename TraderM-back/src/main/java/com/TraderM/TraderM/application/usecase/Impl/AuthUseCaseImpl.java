@@ -1,7 +1,9 @@
 package com.TraderM.TraderM.application.usecase.Impl;
 
+import com.TraderM.TraderM.application.service.WalletService;
 import com.TraderM.TraderM.application.usecase.AuthUseCase;
 import com.TraderM.TraderM.domain.model.User;
+import com.TraderM.TraderM.domain.model.Wallet;
 import com.TraderM.TraderM.domain.repository.UserRepository;
 import com.TraderM.TraderM.infastructure.service.JwtService;
 import com.TraderM.TraderM.presentation.dto.request.AuthRegisterReqDto;
@@ -20,6 +22,7 @@ public class AuthUseCaseImpl implements AuthUseCase {
     private final UserRepository userRepository;
     private final JwtService jwtService;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final WalletService walletService;
 
     public AuthResDto register(AuthRegisterReqDto request) {
         if (userRepository.findByUsername(request.username()).isPresent()) {
@@ -34,6 +37,7 @@ public class AuthUseCaseImpl implements AuthUseCase {
                 .build();
 
         user = userRepository.save(user);
+        walletService.createWallet(Wallet.builder().owner(user).build());
         String token = jwtService.generateToken(user);
 
         return new AuthResDto(user.getId() ,user.getUsername(), token, user.getRole(), null, user.isTwoFactorAuth());

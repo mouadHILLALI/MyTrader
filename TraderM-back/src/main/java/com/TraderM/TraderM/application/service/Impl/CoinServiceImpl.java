@@ -1,6 +1,8 @@
 package com.TraderM.TraderM.application.service.Impl;
 
+import com.TraderM.TraderM.application.service.CalculationService;
 import com.TraderM.TraderM.application.service.CoinService;
+import com.TraderM.TraderM.application.service.TransactionService;
 import com.TraderM.TraderM.domain.model.Coin;
 import com.TraderM.TraderM.domain.model.User;
 import com.TraderM.TraderM.domain.repository.CoinRepository;
@@ -23,7 +25,7 @@ import java.util.UUID;
 public class CoinServiceImpl implements CoinService {
     private final CoinRepository coinRepository;
     private final UserRepository userRepository;
-
+    private final CalculationService calculationService;
     @Transactional
     @Override
     public CoinResDto addCoin(UUID userId, CoinReqDto coin) {
@@ -69,6 +71,7 @@ public class CoinServiceImpl implements CoinService {
         return coinRepository.findCoinsToSell(ownerId).stream().map(coin -> new CoinResDto(coin.getId() , coin.getName() , coin.getSymbol(), coin.getPrice() , coin.getSupply())).toList();
     }
 
+
     @Transactional
     @Override
     public CoinResDto updateCoin(UpdateCoinReqDto coin, UUID ownerId) {
@@ -78,6 +81,7 @@ public class CoinServiceImpl implements CoinService {
         existingCoin.setOwner(findUserById(ownerId));
         existingCoin.setSupply(coin.supply());
         existingCoin.setName(coin.name());
+        calculationService.recalculateCoinPriceBasedOnSupply(existingCoin , coin.supply());
         existingCoin = coinRepository.save(existingCoin);
         return new CoinResDto(existingCoin.getId() , existingCoin.getName() , existingCoin.getSymbol() , existingCoin.getPrice() , existingCoin.getSupply());
     }

@@ -80,7 +80,8 @@
           "options": {
             "polyfills": [
               "zone.js",
-              "zone.js/testing"
+              "zone.js/testing",
+              "src/webpack.config.ts"
             ],
             "tsConfig": "tsconfig.spec.json",
             "assets": [

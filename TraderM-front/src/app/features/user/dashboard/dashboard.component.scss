@@ -1,0 +1,30 @@
+#chart {
+    max-width: 100%;
+    margin: 0 auto;
+  }
+  
+  .apexcharts-tooltip {
+    background: #374151 !important;
+    border: none !important;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+  }
+  
+  .apexcharts-tooltip-title {
+    background: #4b5563 !important;
+    border-bottom: 1px solid #6b7280 !important;
+  }
+  
+  .apexcharts-xaxistooltip {
+    background: #374151 !important;
+    border: 1px solid #4b5563 !important;
+    color: #e5e7eb !important;
+  }
+  
+  .apexcharts-xaxistooltip-bottom:after {
+    border-bottom-color: #374151 !important;
+  }
+  
+  .apexcharts-xaxistooltip-bottom:before {
+    border-bottom-color: #4b5563 !important;
+  }
+  

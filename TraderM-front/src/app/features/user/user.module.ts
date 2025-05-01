@@ -9,13 +9,14 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from '../../core/interceptors/auth.interceptor';
 import { SharedModule } from '../../shared/shared.module';
 import { WalletComponent } from './wallet/wallet.component';
+import { NgApexchartsModule } from 'ng-apexcharts';
 
 
 
 @NgModule({
   declarations: [UserDashboardComponent , MarketComponent , WalletComponent],
   imports: [
-    CommonModule,SharedModule,UserRoutingModule,ReactiveFormsModule
+    CommonModule,SharedModule,UserRoutingModule,ReactiveFormsModule,NgApexchartsModule
   ],
   providers:[CoinService , {
     provide: HTTP_INTERCEPTORS,

@@ -4,21 +4,13 @@ import { Coin } from '../../../types';
 import { ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CoinService } from '../../../core/services/coin.service';
+import { BehaviorSubject } from 'rxjs';
+import { select, Store } from '@ngrx/store';
+import { selectUser } from '../../../app/store/selectors/user.selectors';
+import { TransactionService } from '../../../core/services/transaction.service';
 
 
-interface Transaction {
-  id: string;
-  type: 'send' | 'receive' | 'swap' | 'buy' | 'sell';
-  asset: string;
-  symbol: string;
-  amount: number;
-  value: number;
-  fee: number;
-  date: Date;
-  status: 'completed' | 'pending' | 'failed';
-  address?: string;
-  txHash?: string;
-}
+
 
 @Component({
   selector: 'app-wallet',
@@ -35,75 +27,15 @@ export class WalletComponent implements OnInit {
   showEditModal: boolean = false;
   selectedCoin !: Coin | null;
   editForm!: FormGroup;
-    
-  recentTransactions: Transaction[] = [
-    { 
-      id: 'tx1', 
-      type: 'buy', 
-      asset: 'Bitcoin', 
-      symbol: 'BTC', 
-      amount: 0.023, 
-      value: 432.12, 
-      fee: 1.2, 
-      date: new Date('2025-03-28'), 
-      status: 'completed',
-      txHash: '0x87dj3lkjdlkj3lkj3lkj3lkj3lkj3lkj3lkj3lk'
-    },
-    { 
-      id: 'tx2', 
-      type: 'sell', 
-      asset: 'Ethereum', 
-      symbol: 'ETH', 
-      amount: 1.2, 
-      value: 2100.54, 
-      fee: 3.5, 
-      date: new Date('2025-03-27'), 
-      status: 'completed',
-      txHash: '0x97dj3lkjdlkj3lkj3lkj3lkj3lkj3lkj3lkj3lk'
-    },
-    { 
-      id: 'tx3', 
-      type: 'send', 
-      asset: 'Solana', 
-      symbol: 'SOL', 
-      amount: 3.5, 
-      value: 420.65, 
-      fee: 0.001, 
-      date: new Date('2025-03-25'), 
-      status: 'pending',
-      address: 'sol97dj3lkjdlkj3lkj3lkj3lkj3lkj3lkj3lk',
-      txHash: '0xa7dj3lkjdlkj3lkj3lkj3lkj3lkj3lkj3lkj3lk'
-    },
-    { 
-      id: 'tx4', 
-      type: 'receive', 
-      asset: 'Cardano', 
-      symbol: 'ADA', 
-      amount: 145, 
-      value: 87.23, 
-      fee: 0, 
-      date: new Date('2025-03-22'), 
-      status: 'completed',
-      address: 'addr97dj3lkjdlkj3lkj3lkj3lkj3lkj3lkj3lk',
-      txHash: '0xb7dj3lkjdlkj3lkj3lkj3lkj3lkj3lkj3lkj3lk'
-    },
-    { 
-      id: 'tx5', 
-      type: 'swap', 
-      asset: 'Bitcoin', 
-      symbol: 'BTC', 
-      amount: 0.05, 
-      value: 1200.00, 
-      fee: 2.5, 
-      date: new Date('2025-03-20'), 
-      status: 'completed',
-      txHash: '0xc7dj3lkjdlkj3lkj3lkj3lkj3lkj3lkj3lkj3lk'
-    }
-  ];
+  transactionDetail!:any;
+  userId$ = new BehaviorSubject<string | null>(null); 
+  
+
   
   showSendModal: boolean = false;
   showReceiveModal: boolean = false;
   showSwapModal: boolean = false;
+  showTransactionModal : boolean = false;
   
   sendAmount: number = 0;
   recipientAddress: string = '';
@@ -111,14 +43,20 @@ export class WalletComponent implements OnInit {
   
   activeTab: 'assets' | 'transactions' | 'security' = 'assets';
   
-  constructor(private route: ActivatedRoute , private fb: FormBuilder,private coinService :CoinService) { }
+  constructor(private route: ActivatedRoute , private fb: FormBuilder,private coinService :CoinService , private store : Store , 
+    private transactionService : TransactionService) { 
+     this.store.pipe(select(selectUser)).subscribe(user => {
+              if (user?.userId) {
+                this.userId$.next(user.userId);
+              }
+          });
+  }
 
   ngOnInit(): void {
     this.route.data.subscribe(data => {
       this.coinData = data['coinData'].coinData; 
       this.transactionsData = data['coinData'].transactionsData; 
     });
-  
     console.log(this.coinData);
     console.log(this.transactionsData); 
   }
@@ -132,6 +70,12 @@ export class WalletComponent implements OnInit {
     });
     this.showEditModal = true;
   }
+
+  toggleTransactionModal(transaction : any){
+    this.transactionDetail = transaction;
+    this.showTransactionModal = !this.showTransactionModal;    
+  }
+
   
 
   editCoin() {
@@ -212,8 +156,8 @@ export class WalletComponent implements OnInit {
     }
   }
   
-  getTypeClass(type: string): string {
-    switch(type) {
+  getTypeClass(tx: any): string { 
+    switch(this.getTransactionType(tx)) {
       case 'buy': return 'bg-green-500/20 text-green-400';
       case 'sell': return 'bg-red-500/20 text-red-400';
       case 'send': return 'bg-blue-500/20 text-blue-400';
@@ -221,6 +165,27 @@ export class WalletComponent implements OnInit {
       case 'swap': return 'bg-orange-500/20 text-orange-400';
       default: return 'bg-gray-500/20 text-gray-400';
     }
+  }
+
+  approveTransaction(transactionId : any){
+    this.transactionService.approveTransaction(transactionId).subscribe({
+      next : (value) => console.log("value here tra" , value),
+      complete : ()=> console.log("transaction complete"),
+      error : (err) => console.error(err)
+    })
+  }
+
+  cancelTransaction(transactionId : any){
+    this.transactionService.cancelTransaction(transactionId).subscribe({
+      next : (value) => console.log("value here tra" , value),
+      complete : ()=> console.log("transaction complete"),
+      error : (err) => console.error(err)
+    })
+  }
+
+  getTransactionType(tx:any) : string {
+    if(tx.buyer.id === this.userId$.value) return "buy";
+    return "sell";
   }
   
   getTypeIcon(type: string): string {
